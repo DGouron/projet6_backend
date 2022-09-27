@@ -1,0 +1,27 @@
+{
+  "name": "projet6_backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DGouron/projet6_backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DGouron/projet6_backend/issues"
+  },
+  "homepage": "https://github.com/DGouron/projet6_backend#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^16.0.2",
+    "express": "^4.18.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.6.2",
+    "mongoose-unique-validator": "^3.1.0"
+  }
+}
