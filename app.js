@@ -1,13 +1,27 @@
 const express = require("express");
+const rateLimit = require("express-rate-limit");
+var xss = require("xss-clean");
 const path = require("path");
 
 const userRoutes = require("./routes/user");
 const sauceRoutes = require("./routes/sauce");
+
 const app = express();
 app.use(express.json());
 
-app.use((req, res, next) => {
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
 
+// Apply the rate limiting middleware to all requests
+app.use(limiter);
+
+app.use(xss()); //Prevent XSS attacks after rate limiting because we need to block the attaquant IP
+
+app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
