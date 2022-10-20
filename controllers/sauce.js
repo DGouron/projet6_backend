@@ -5,6 +5,7 @@ const valideImageFormat = {
   "image/jpg": true,
   "image/jpeg": true,
   "image/png": true,
+  "image/webp": true,
 };
 
 exports.createSauce = (req, res, next) => {
@@ -12,6 +13,7 @@ exports.createSauce = (req, res, next) => {
   delete sauceObject._id;
 
   if (!valideImageFormat[req.file.mimetype]) {
+    console.log("Invalid image format.");
     res.status(400).json({ error: "Invalid image format." });
   } else {
     const sauce = new Sauce({
@@ -54,20 +56,25 @@ exports.deleteSauce = (req, res, next) => {
 };
 
 exports.modifySauce = (req, res, next) => {
-  const sauceObject = req.file
-    ? {
-        ...JSON.parse(req.body.sauce),
-        imageUrl: `${req.protocol}://${req.get("host")}/images/${
-          req.file.filename
-        }`,
-      }
-    : { ...req.body };
-  Sauce.updateOne(
-    { _id: req.params.id },
-    { ...sauceObject, _id: req.params.id }
-  )
-    .then(() => res.status(201).json({ message: "Objet modifié." }))
-    .catch((error) => res.status(400).json({ error }));
+  if (!valideImageFormat[req.file.mimetype]) {
+    console.log("Invalid image format.");
+    res.status(400).json({ error: "Invalid image format." });
+  } else {
+    const sauceObject = req.file
+      ? {
+          ...JSON.parse(req.body.sauce),
+          imageUrl: `${req.protocol}://${req.get("host")}/images/${
+            req.file.filename
+          }`,
+        }
+      : { ...req.body };
+    Sauce.updateOne(
+      { _id: req.params.id },
+      { ...sauceObject, _id: req.params.id }
+    )
+      .then(() => res.status(201).json({ message: "Objet modifié." }))
+      .catch((error) => res.status(400).json({ error }));
+  }
 };
 
 exports.getOneSauce = (req, res, next) => {
