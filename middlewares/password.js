@@ -19,7 +19,7 @@ schema
   .oneOf(["Passw0rd", "Password123"]); // Blacklist these values
 
 module.exports = (req, res, next) => {
-  console.log("Processing data from the client's form");
+  console.log("Processing data from the client's form : check password");
   try {
     //Check the validity of the password
     const passwordValidity = schema.validate(req.body.password, {
