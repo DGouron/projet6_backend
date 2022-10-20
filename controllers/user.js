@@ -20,6 +20,7 @@ exports.signup = (req, res, next) => {
     })
     .catch((error) => res.status(500).json({ error }));
 };
+
 exports.login = (req, res, next) => {
   console.log(req.body.email + " try to connect.");
   User.findOne({ email: req.body.email })
@@ -37,13 +38,12 @@ exports.login = (req, res, next) => {
             userId: user._id,
             token: jsonwebtoken.sign(
               { userId: user._id },
-              "RANDOM_TOKEN_SECRET",
+              "rf94mxlnk8qqpd1mjhelegzh7ripu",
               { expiresIn: "24h" }
-            )
+            ),
           });
         })
         .catch((error) => res.status(500).json({ error }));
     })
     .catch((error) => res.status(500).json({ error }));
 };
-

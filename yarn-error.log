@@ -1,0 +1,57 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Users\Samantha\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add password-validator
+
+PATH: 
+  C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\AMD\ATI.ACE\Core-Static;C:\Program Files (x86)\ATI Technologies\ATI.ACE\Core-Static;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Perforce\;C:\Program Files\Perforce;C:\Program Files (x86)\PuTTY\;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Users\Samantha\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Users\Samantha\AppData\Local\Microsoft\WindowsApps;C:\Users\Samantha\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Samantha\AppData\Local\GitHubDesktop\bin;C:\Users\Samantha\AppData\Roaming\npm;C:\Program Files\heroku\bin;C:\Users\Samantha\AppData\Roaming\nvm;C:\Program Files\nodejs
+
+Yarn version: 
+  1.22.18
+
+Node version: 
+  16.17.1
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: EPERM: operation not permitted, unlink 'C:\Users\Samantha\Documents\GitHub\projet6_backend\node_modules\bcrypt\lib\binding\napi-v3\bcrypt_lib.node'
+
+npm manifest: 
+  {
+    "name": "projet6_backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/DGouron/projet6_backend.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+      "url": "https://github.com/DGouron/projet6_backend/issues"
+    },
+    "homepage": "https://github.com/DGouron/projet6_backend#readme",
+    "dependencies": {
+      "bcrypt": "^5.0.1",
+      "dotenv": "^16.0.2",
+      "express": "^4.18.1",
+      "express-rate-limit": "^6.6.0",
+      "helmet": "^6.0.0",
+      "jsonwebtoken": "^8.5.1",
+      "mongoose": "^6.6.2",
+      "mongoose-unique-validator": "^3.1.0",
+      "multer": "^1.4.5-lts.1",
+      "validator": "^13.7.0",
+      "xss-clean": "^0.1.1"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
