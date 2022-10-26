@@ -2,6 +2,7 @@ const MongooseErrors = require("mongoose-errors");
 const Sauce = require("../models/sauce");
 const dotenv = require("dotenv");
 const fs = require("fs");
+const sanitize = require("mongo-sanitize");
 dotenv.config();
 
 const valideImageFormat = {
@@ -11,13 +12,17 @@ const valideImageFormat = {
   "image/webp": true,
 };
 
+const cleanIt = (itemToClean) => {
+  return sanitize(itemToClean);
+};
+
 exports.createSauce = async (req, res, next) => {
   try {
     if (!valideImageFormat[req.file.mimetype]) {
       console.log("Invalid image format.");
       res.status(400).json({ error: "Invalid image format." });
     } else {
-      const sauceObject = JSON.parse(req.body.sauce);
+      const sauceObject = JSON.parse(cleanIt(req.body.sauce));
       delete sauceObject._id;
       const sauce = new Sauce({
         ...sauceObject,
@@ -35,11 +40,11 @@ exports.createSauce = async (req, res, next) => {
 
 exports.deleteSauce = async (req, res, next) => {
   try {
-    const sauce = await Sauce.findOne({ _id: req.params.id });
+    const sauce = await Sauce.findOne({ _id: cleanIt(req.params.id) });
 
     fs.unlink(`${sauce.imageUrl.split("/").slice(3).join("/")}`, async () => {
       console.log(` Image deleted : ${sauce.imageUrl}`);
-      await Sauce.deleteOne({ _id: req.params.id });
+      await Sauce.deleteOne({ _id: cleanIt(req.params.id) });
       res.status(200).json({ message: "Objet supprimé." });
     });
   } catch (error) {
@@ -52,14 +57,14 @@ exports.modifySauce = async (req, res, next) => {
   try {
     const sauceObject = req.file
       ? {
-          ...JSON.parse(req.body.sauce),
+          ...JSON.parse(cleanIt(req.body.sauce)),
           imageUrl: `${req.protocol}://${req.get("host")}/${
             process.env.IMAGE_FOLDER
           }/${req.file.filename}`,
         }
       : { ...req.body };
 
-    const sauce = await Sauce.findOne({ _id: req.params.id });
+    const sauce = await Sauce.findOne({ _id: cleanIt(req.params.id) });
 
     if (req.file && sauce.imageUrl) {
       fs.unlink(`${sauce.imageUrl.split("/").slice(3).join("/")}`, () => {
@@ -70,8 +75,8 @@ exports.modifySauce = async (req, res, next) => {
     }
 
     await Sauce.updateOne(
-      { _id: req.params.id },
-      { ...sauceObject, _id: req.params.id }
+      { _id: cleanIt(req.params.id) },
+      { ...sauceObject, _id: cleanIt(req.params.id) }
     );
     res.status(200).json({ message: "Objet modifié." });
   } catch (error) {
@@ -82,7 +87,7 @@ exports.modifySauce = async (req, res, next) => {
 
 exports.getOneSauce = async (req, res, next) => {
   try {
-    const sauce = await Sauce.findOne({ _id: req.params.id });
+    const sauce = await Sauce.findOne({ _id: cleanIt(req.params.id) });
     res.status(200).json(sauce);
   } catch (error) {
     res.status(400).json(error);
@@ -99,17 +104,17 @@ exports.getSauces = async (req, res, next) => {
 };
 
 exports.likeSauce = async (req, res, next) => {
-  let sauce = await Sauce.findOne({ _id: req.params.id });
+  let sauce = await Sauce.findOne({ _id: cleanIt(req.params.id) });
   try {
-    if (sauce && sauce.userId === req.body.userId) {
+    if (sauce && sauce.userId === cleanIt(req.body.userId)) {
       res.status(200).json({ error: "You can't like your own sauce." });
     } else {
       switch (req.body.like) {
         case 1:
           await Sauce.updateOne(
-            { _id: req.params.id },
+            { _id: cleanIt(req.params.id) },
             {
-              $push: { usersLiked: req.body.userId },
+              $push: { usersLiked: cleanIt(req.body.userId) },
               $inc: { likes: 1 },
             }
           );
@@ -117,31 +122,31 @@ exports.likeSauce = async (req, res, next) => {
           break;
         case -1:
           await Sauce.updateOne(
-            { _id: req.params.id },
+            { _id: cleanIt(req.params.id) },
             {
-              $push: { usersDisliked: req.body.userId },
+              $push: { usersDisliked: cleanIt(req.body.userId) },
               $inc: { dislikes: 1 },
             }
           );
           res.status(200).json({ message: "Objet disliké." });
           break;
         case 0:
-          const sauce = await Sauce.findOne({ _id: req.params.id });
-          if (sauce.usersLiked.includes(req.body.userId)) {
+          const sauce = await Sauce.findOne({ _id: cleanIt(req.params.id) });
+          if (sauce.usersLiked.includes(cleanIt(req.body.userId))) {
             await Sauce.updateOne(
-              { _id: req.params.id },
+              { _id: cleanIt(req.params.id) },
               {
-                $pull: { usersLiked: req.body.userId },
+                $pull: { usersLiked: cleanIt(req.body.userId) },
                 $inc: { likes: -1 },
               }
             );
             res.status(200).json({ message: "Objet unliké." });
           }
-          if (sauce.usersDisliked.includes(req.body.userId)) {
+          if (sauce.usersDisliked.includes(cleanIt(req.body.userId))) {
             await Sauce.updateOne(
-              { _id: req.params.id },
+              { _id: cleanIt(req.params.id) },
               {
-                $pull: { usersDisliked: req.body.userId },
+                $pull: { usersDisliked: cleanIt(req.body.userId) },
                 $inc: { dislikes: -1 },
               }
             );
