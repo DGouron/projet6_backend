@@ -99,53 +99,58 @@ exports.getSauces = async (req, res, next) => {
 };
 
 exports.likeSauce = async (req, res, next) => {
+  let sauce = await Sauce.findOne({ _id: req.params.id });
   try {
-    switch (req.body.like) {
-      case 1:
-        await Sauce.updateOne(
-          { _id: req.params.id },
-          {
-            $push: { usersLiked: req.body.userId },
-            $inc: { likes: 1 },
-          }
-        );
-        res.status(200).json({ message: "Objet liké." });
-        break;
-      case -1:
-        await Sauce.updateOne(
-          { _id: req.params.id },
-          {
-            $push: { usersDisliked: req.body.userId },
-            $inc: { dislikes: 1 },
-          }
-        );
-        res.status(200).json({ message: "Objet disliké." });
-        break;
-      case 0:
-        const sauce = await Sauce.findOne({ _id: req.params.id });
-        if (sauce.usersLiked.includes(req.body.userId)) {
+    if (sauce && sauce.userId === req.body.userId) {
+      res.status(200).json({ error: "You can't like your own sauce." });
+    } else {
+      switch (req.body.like) {
+        case 1:
           await Sauce.updateOne(
             { _id: req.params.id },
             {
-              $pull: { usersLiked: req.body.userId },
-              $inc: { likes: -1 },
+              $push: { usersLiked: req.body.userId },
+              $inc: { likes: 1 },
             }
           );
-          res.status(200).json({ message: "Objet unliké." });
-        }
-        if (sauce.usersDisliked.includes(req.body.userId)) {
+          res.status(200).json({ message: "Objet liké." });
+          break;
+        case -1:
           await Sauce.updateOne(
             { _id: req.params.id },
             {
-              $pull: { usersDisliked: req.body.userId },
-              $inc: { dislikes: -1 },
+              $push: { usersDisliked: req.body.userId },
+              $inc: { dislikes: 1 },
             }
           );
-          res.status(200).json({ message: "Objet undisliké." });
-        }
-        break;
-      default:
-        res.status(400).json({ error: "Invalid like value." });
+          res.status(200).json({ message: "Objet disliké." });
+          break;
+        case 0:
+          const sauce = await Sauce.findOne({ _id: req.params.id });
+          if (sauce.usersLiked.includes(req.body.userId)) {
+            await Sauce.updateOne(
+              { _id: req.params.id },
+              {
+                $pull: { usersLiked: req.body.userId },
+                $inc: { likes: -1 },
+              }
+            );
+            res.status(200).json({ message: "Objet unliké." });
+          }
+          if (sauce.usersDisliked.includes(req.body.userId)) {
+            await Sauce.updateOne(
+              { _id: req.params.id },
+              {
+                $pull: { usersDisliked: req.body.userId },
+                $inc: { dislikes: -1 },
+              }
+            );
+            res.status(200).json({ message: "Objet undisliké." });
+          }
+          break;
+        default:
+          res.status(400).json({ error: "Invalid like value." });
+      }
     }
   } catch (error) {
     res.status(400).json(error);
