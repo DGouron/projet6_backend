@@ -16,7 +16,7 @@ const limiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 
-app.use(xss()); //Prevent XSS attacks after rate limiting because we need to block the attaquant IP
+app.use(xss()); //Prevent XSS attacks
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
