@@ -7,4 +7,5 @@ const userSchema = mongoose.Schema({
 });
 
 userSchema.plugin(uniqueValidator);
+//to do -> add mongoose error here
 module.exports = mongoose.model("User", userSchema);
