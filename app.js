@@ -1,6 +1,6 @@
 const express = require("express");
 const rateLimit = require("express-rate-limit");
-var xss = require("xss-clean");
+let xss = require("xss-clean");
 const path = require("path");
 
 const userRoutes = require("./routes/user");
@@ -15,9 +15,6 @@ const limiter = rateLimit({
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
-
-// Apply the rate limiting middleware to all requests
-app.use(limiter);
 
 app.use(xss()); //Prevent XSS attacks after rate limiting because we need to block the attaquant IP
 
@@ -36,7 +33,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/images", express.static(path.join(__dirname, "images")));
-app.use("/api/auth", userRoutes);
+app.use("/api/auth", limiter, userRoutes);
 app.use("/api/sauces", sauceRoutes);
 
 module.exports = app;
