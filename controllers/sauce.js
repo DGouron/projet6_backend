@@ -41,12 +41,16 @@ exports.createSauce = async (req, res, next) => {
 exports.deleteSauce = async (req, res, next) => {
   try {
     const sauce = await Sauce.findOne({ _id: cleanIt(req.params.id) });
-
-    fs.unlink(`${sauce.imageUrl.split("/").slice(3).join("/")}`, async () => {
-      console.log(` Image deleted : ${sauce.imageUrl}`);
-      await Sauce.deleteOne({ _id: cleanIt(req.params.id) });
-      res.status(200).json({ message: "Objet supprimé." });
-    });
+    if (sauce.userId !== req.auth.userId) {
+      console.log("User ID non valable.");
+      res.status(403).json({ error: "User ID non valable." });
+    } else {
+      fs.unlink(`${sauce.imageUrl.split("/").slice(3).join("/")}`, async () => {
+        console.log(` Image deleted : ${sauce.imageUrl}`);
+        await Sauce.deleteOne({ _id: cleanIt(req.params.id) });
+        res.status(200).json({ message: "Objet supprimé." });
+      });
+    }
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
@@ -65,20 +69,22 @@ exports.modifySauce = async (req, res, next) => {
       : { ...req.body };
 
     const sauce = await Sauce.findOne({ _id: cleanIt(req.params.id) });
-
-    if (req.file && sauce.imageUrl) {
-      fs.unlink(`${sauce.imageUrl.split("/").slice(3).join("/")}`, () => {
-        console.log(
-          ` Image deleted : ${process.env.IMAGE_FOLDER}/${sauce.imageUrl}`
-        );
-      });
+    if (sauce.userId !== req.auth.userId) {
+      res.status(403).json({ error: "Invalid user ID." });
+    } else {
+      if (req.file && sauce.imageUrl) {
+        fs.unlink(`${sauce.imageUrl.split("/").slice(3).join("/")}`, () => {
+          console.log(
+            ` Image deleted : ${process.env.IMAGE_FOLDER}/${sauce.imageUrl}`
+          );
+        });
+      }
+      await Sauce.updateOne(
+        { _id: cleanIt(req.params.id) },
+        { ...sauceObject, _id: cleanIt(req.params.id) }
+      );
+      res.status(200).json({ message: "Objet modifié." });
     }
-
-    await Sauce.updateOne(
-      { _id: cleanIt(req.params.id) },
-      { ...sauceObject, _id: cleanIt(req.params.id) }
-    );
-    res.status(200).json({ message: "Objet modifié." });
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
