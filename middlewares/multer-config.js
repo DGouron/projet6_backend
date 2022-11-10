@@ -1,5 +1,5 @@
 const multer = require("multer");
-
+const maxSize = 1 * 1024 * 1024; // 1MB
 const MIME_TYPES = {
   "image/jpg": "jpg",
   "image/jpeg": "jpg",
@@ -10,6 +10,7 @@ const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     callback(null, "images");
   },
+
   filename: (req, file, callback) => {
     let name = file.originalname.split(" ").join("_");
     name = name.split(".")[0];
@@ -18,4 +19,7 @@ const storage = multer.diskStorage({
   },
 });
 
-module.exports = multer({ storage: storage }).single("image");
+module.exports = multer({
+  storage: storage,
+  limits: { fileSize: maxSize },
+}).single("image");
