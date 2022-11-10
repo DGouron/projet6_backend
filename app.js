@@ -10,8 +10,6 @@ const { default: helmet } = require("helmet");
 const app = express();
 app.use(express.json());
 
-app.use(helmet());
-
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
@@ -39,4 +37,5 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 app.use("/api/auth", limiter, userRoutes);
 app.use("/api/sauces", sauceRoutes);
 
+app.use(helmet()); //Prevent XSS attacks
 module.exports = app;

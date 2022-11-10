@@ -44,6 +44,7 @@ exports.login = async (req, res, next) => {
     if (!compare) {
       return res.status(401).json({ error: "Wrong password." });
     }
+    console.log('User "' + cleanIt(req.body.email) + '" connected.');
     res.status(200).json({
       userId: user._id,
       token: createToken(user),
