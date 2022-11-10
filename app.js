@@ -5,11 +5,12 @@ const path = require("path");
 
 const userRoutes = require("./routes/user");
 const sauceRoutes = require("./routes/sauce");
+const { default: helmet } = require("helmet");
 
 const app = express();
 app.use(express.json());
 
-//TO DO : add helmet
+app.use(helmet());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
